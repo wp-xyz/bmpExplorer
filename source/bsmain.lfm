@@ -1,0 +1,188 @@
+object MainForm: TMainForm
+  Left = 314
+  Height = 529
+  Top = 130
+  Width = 839
+  Caption = 'MainForm'
+  ClientHeight = 529
+  ClientWidth = 839
+  LCLVersion = '3.99.0.0'
+  OnCreate = FormCreate
+  object Panel1: TPanel
+    Left = 0
+    Height = 529
+    Top = 0
+    Width = 272
+    Align = alLeft
+    Caption = 'Panel1'
+    ClientHeight = 529
+    ClientWidth = 272
+    TabOrder = 0
+    object ShellTreeView1: TShellTreeView
+      Left = 1
+      Height = 191
+      Top = 1
+      Width = 270
+      Align = alTop
+      TabOrder = 0
+      Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+      ShellListView = ShellListView1
+    end
+    object ShellListView1: TShellListView
+      Left = 1
+      Height = 331
+      Top = 197
+      Width = 270
+      Align = alClient
+      Color = clDefault
+      Mask = '*.bmp'
+      TabOrder = 1
+      ShellTreeView = ShellTreeView1
+      OnSelectItem = ShellListView1SelectItem
+    end
+    object Splitter1: TSplitter
+      Cursor = crVSplit
+      Left = 1
+      Height = 5
+      Top = 192
+      Width = 270
+      Align = alTop
+      ResizeAnchor = akTop
+    end
+  end
+  object Splitter2: TSplitter
+    Left = 272
+    Height = 529
+    Top = 0
+    Width = 5
+  end
+  object MainPageControl: TPageControl
+    Left = 277
+    Height = 529
+    Top = 0
+    Width = 562
+    ActivePage = pgData
+    Align = alClient
+    TabIndex = 2
+    TabOrder = 2
+    object pgImage: TTabSheet
+      Caption = 'Image'
+      ClientHeight = 501
+      ClientWidth = 554
+      object ScrollBox1: TScrollBox
+        Left = 0
+        Height = 501
+        Top = 0
+        Width = 554
+        HorzScrollBar.Page = 90
+        VertScrollBar.Page = 90
+        Align = alClient
+        ClientHeight = 497
+        ClientWidth = 550
+        TabOrder = 0
+        object Image1: TImage
+          Left = 0
+          Height = 90
+          Top = 0
+          Width = 90
+        end
+      end
+    end
+    object pgHex: TTabSheet
+      Caption = 'Hex'
+    end
+    object pgData: TTabSheet
+      Caption = 'Data'
+      ClientHeight = 501
+      ClientWidth = 554
+      object DataPageControl: TPageControl
+        Left = 0
+        Height = 501
+        Top = 0
+        Width = 554
+        ActivePage = pgColorTable
+        Align = alClient
+        TabIndex = 2
+        TabOrder = 0
+        object pgFileHeader: TTabSheet
+          Caption = 'Bitmap File Header'
+          ClientHeight = 473
+          ClientWidth = 546
+          object FileHeaderValueList: TValueListEditor
+            Left = 0
+            Height = 473
+            Top = 0
+            Width = 546
+            Align = alClient
+            FixedCols = 0
+            MouseWheelOption = mwGrid
+            RowCount = 3
+            TabOrder = 0
+            DisplayOptions = [doColumnTitles, doAutoColResize]
+            Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goAlwaysShowEditor, goThumbTracking]
+            Strings.Strings = (
+              ''
+              ''
+            )
+            ColWidths = (
+              263
+              262
+            )
+          end
+        end
+        object pgBitmapInfoHeader: TTabSheet
+          Caption = 'Bitmap Info Header'
+          ClientHeight = 473
+          ClientWidth = 546
+          object InfoHeaderValueList: TValueListEditor
+            Left = 0
+            Height = 473
+            Top = 0
+            Width = 546
+            Align = alClient
+            FixedCols = 0
+            MouseWheelOption = mwGrid
+            RowCount = 3
+            TabOrder = 0
+            DisplayOptions = [doColumnTitles, doAutoColResize]
+            Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goAlwaysShowEditor, goThumbTracking]
+            Strings.Strings = (
+              ''
+              ''
+            )
+            ColWidths = (
+              263
+              262
+            )
+          end
+        end
+        object pgColorTable: TTabSheet
+          Caption = 'Color Table'
+          ClientHeight = 473
+          ClientWidth = 546
+          object ColorTableValueList: TValueListEditor
+            Left = 0
+            Height = 473
+            Top = 0
+            Width = 546
+            Align = alClient
+            FixedCols = 0
+            MouseWheelOption = mwGrid
+            RowCount = 3
+            TabOrder = 0
+            DisplayOptions = [doColumnTitles, doAutoColResize]
+            Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goAlwaysShowEditor, goThumbTracking]
+            Strings.Strings = (
+              ''
+              ''
+            )
+            ColWidths = (
+              271
+              271
+            )
+          end
+        end
+      end
+    end
+  end
+end
