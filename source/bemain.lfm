@@ -2,11 +2,11 @@ object MainForm: TMainForm
   Left = 314
   Height = 529
   Top = 130
-  Width = 839
+  Width = 895
   Caption = 'MainForm'
   ClientHeight = 529
-  ClientWidth = 839
-  LCLVersion = '3.99.0.0'
+  ClientWidth = 895
+  LCLVersion = '4.99.0.0'
   OnCreate = FormCreate
   object Panel1: TPanel
     Left = 0
@@ -60,7 +60,7 @@ object MainForm: TMainForm
     Left = 277
     Height = 529
     Top = 0
-    Width = 562
+    Width = 618
     ActivePage = pgImage
     Align = alClient
     TabIndex = 0
@@ -68,17 +68,17 @@ object MainForm: TMainForm
     object pgImage: TTabSheet
       Caption = 'Image'
       ClientHeight = 501
-      ClientWidth = 554
+      ClientWidth = 610
       object ScrollBox1: TScrollBox
         Left = 0
         Height = 501
         Top = 0
-        Width = 554
+        Width = 610
         HorzScrollBar.Page = 90
         VertScrollBar.Page = 90
         Align = alClient
         ClientHeight = 497
-        ClientWidth = 550
+        ClientWidth = 606
         TabOrder = 0
         object Image1: TImage
           Left = 0
@@ -91,27 +91,26 @@ object MainForm: TMainForm
     object pgData: TTabSheet
       Caption = 'Data'
       ClientHeight = 501
-      ClientWidth = 554
+      ClientWidth = 610
       object DataPageControl: TPageControl
         Left = 0
         Height = 501
         Top = 0
-        Width = 554
-        ActivePage = pbSummary
+        Width = 610
+        ActivePage = pgSummary
         Align = alClient
         TabIndex = 0
         TabOrder = 0
-        object pbSummary: TTabSheet
+        object pgSummary: TTabSheet
           Caption = 'Summary'
           ClientHeight = 473
-          ClientWidth = 546
+          ClientWidth = 602
           object SummaryValueList: TValueListEditor
             Left = 0
             Height = 473
             Top = 0
-            Width = 546
+            Width = 602
             Align = alClient
-            FixedCols = 0
             MouseWheelOption = mwGrid
             RowCount = 3
             TabOrder = 0
@@ -122,22 +121,21 @@ object MainForm: TMainForm
               ''
             )
             ColWidths = (
-              271
-              271
+              299
+              299
             )
           end
         end
         object pgFileHeader: TTabSheet
           Caption = 'Bitmap File Header'
           ClientHeight = 473
-          ClientWidth = 546
+          ClientWidth = 602
           object FileHeaderValueList: TValueListEditor
             Left = 0
             Height = 473
             Top = 0
-            Width = 546
+            Width = 602
             Align = alClient
-            FixedCols = 0
             MouseWheelOption = mwGrid
             RowCount = 3
             TabOrder = 0
@@ -148,22 +146,21 @@ object MainForm: TMainForm
               ''
             )
             ColWidths = (
-              271
-              271
+              299
+              299
             )
           end
         end
         object pgBitmapInfoHeader: TTabSheet
           Caption = 'Bitmap Info Header'
           ClientHeight = 473
-          ClientWidth = 546
+          ClientWidth = 602
           object InfoHeaderValueList: TValueListEditor
             Left = 0
             Height = 473
             Top = 0
-            Width = 546
+            Width = 602
             Align = alClient
-            FixedCols = 0
             MouseWheelOption = mwGrid
             RowCount = 3
             TabOrder = 0
@@ -174,22 +171,21 @@ object MainForm: TMainForm
               ''
             )
             ColWidths = (
-              263
-              262
+              299
+              299
             )
           end
         end
         object pgColorTable: TTabSheet
           Caption = 'Color Table'
           ClientHeight = 473
-          ClientWidth = 546
+          ClientWidth = 602
           object ColorTableValueList: TValueListEditor
             Left = 0
             Height = 473
             Top = 0
-            Width = 546
+            Width = 602
             Align = alClient
-            FixedCols = 0
             MouseWheelOption = mwGrid
             RowCount = 3
             TabOrder = 0
@@ -200,11 +196,71 @@ object MainForm: TMainForm
               ''
             )
             ColWidths = (
-              271
-              271
+              299
+              299
             )
           end
         end
+      end
+    end
+    object pgHex: TTabSheet
+      Caption = 'Hex'
+      ClientHeight = 501
+      ClientWidth = 610
+      object Panel2: TPanel
+        Left = 0
+        Height = 20
+        Top = 0
+        Width = 610
+        Align = alTop
+        AutoSize = True
+        BevelOuter = bvNone
+        ClientHeight = 20
+        ClientWidth = 610
+        TabOrder = 0
+        object cbHexAddressMode: TCheckBox
+          Left = 0
+          Height = 19
+          Top = 0
+          Width = 127
+          Caption = 'hexadecimal address'
+          TabOrder = 0
+          OnChange = cbHexAddressModeChange
+        end
+        object cbHexSingleBytes: TCheckBox
+          AnchorSideLeft.Control = cbHexAddressMode
+          AnchorSideLeft.Side = asrBottom
+          AnchorSideTop.Control = Panel2
+          AnchorSideTop.Side = asrCenter
+          Left = 135
+          Height = 19
+          Top = 1
+          Width = 80
+          BorderSpacing.Left = 8
+          BorderSpacing.Right = 4
+          Caption = 'single bytes'
+          Checked = True
+          State = cbChecked
+          TabOrder = 1
+          OnChange = cbHexSingleBytesChange
+        end
+      end
+      object StatusBar: TStatusBar
+        Left = 0
+        Height = 23
+        Top = 478
+        Width = 610
+        Panels = <        
+          item
+            Width = 250
+          end        
+          item
+            Width = 100
+          end        
+          item
+            Width = 50
+          end>
+        SimplePanel = False
       end
     end
   end

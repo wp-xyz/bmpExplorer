@@ -5,16 +5,21 @@ unit beMain;
 interface
 
 uses
-  Classes, SysUtils,
-  LCLType, Forms, Controls, Graphics, Dialogs, ShellCtrls, ExtCtrls,
-  ComCtrls, ValEdit, bmpComn;
+  Classes, SysUtils, StrUtils,
+  LCLType, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, ComCtrls,
+  ShellCtrls, ValEdit,
+  bmpcomn, mpHexEditor;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
+    cbHexAddressMode: TCheckBox;
+    cbHexSingleBytes: TCheckBox;
     ColorTableValueList: TValueListEditor;
+    Panel2: TPanel;
+    StatusBar: TStatusBar;
     SummaryValueList: TValueListEditor;
     InfoHeaderValueList: TValueListEditor;
     Image1: TImage;
@@ -32,7 +37,10 @@ type
     FileHeaderValueList: TValueListEditor;
     pgBitmapInfoHeader: TTabSheet;
     pgColorTable: TTabSheet;
-    pbSummary: TTabSheet;
+    pgSummary: TTabSheet;
+    pgHex: TTabSheet;
+    procedure cbHexAddressModeChange(Sender: TObject);
+    procedure cbHexSingleBytesChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ShellListView1SelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
@@ -40,10 +48,14 @@ type
     FFileHeader: TBitmapFileHeader;
     FInfoHeader: TBitmapInfoHeader;
     FColorFormat: String;
+    FHexEditor: TMPHexEditor;
+    procedure HexEditorClick(Sender: TObject);
     procedure LoadColorTable(AStream: TStream);
     procedure LoadFileHeader(AStream: TStream);
+    procedure LoadHex(AStream: TStream);
     procedure LoadImage(AStream: TStream);
     procedure LoadInfoHeader(AStream: TStream);
+    procedure UpdateStatusbar;
     procedure UpdateSummary;
 
   public
@@ -64,15 +76,69 @@ uses
 const
   APP_TITLE = 'BMP Explorer';
 
+  PANEL_OFFSET = 0;
+  PANEL_ENDIAN = 1;
+  PANEL_MSG = 2;
+
+function GetFixedFontName: String;
+var
+  idx: Integer;
+begin
+  Result := Screen.SystemFont.Name;
+  idx := Screen.Fonts.IndexOf('Courier New');
+  if idx = -1 then
+    idx := Screen.Fonts.IndexOf('Courier 10 Pitch');
+  if idx <> -1 then
+    Result := Screen.Fonts[idx]
+  else
+    for idx := 0 to Screen.Fonts.Count-1 do
+      if pos('courier', Lowercase(Screen.Fonts[idx])) = 1 then
+      begin
+        Result := Screen.Fonts[idx];
+        exit;
+      end;
+end;
+
 { TMainForm }
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Caption := APP_TITLE;
+
+  FHexEditor := TMPHExEditor.Create(self);
+  FHexEditor.Parent := pgHex;
+  FHexEditor.Align := alClient;
+  FHexEditor.Font.Name := GetFixedFontName;   // The hard-coded Courier New does not exist in Linux
+  FHexEditor.Font.Size := 9;
+  FHexEditor.BytesPerColumn := IfThen(cbHexSingleBytes.Checked, 1, 2);
+  FHexEditor.RulerNumberBase := IfThen(cbHexAddressMode.Checked, 16, 10);
+  FHexEditor.OffsetFormat := IfThen(cbHexAddressMode.Checked, '-!10:$|', '-!0A: |');
+  FHexEditor.ReadOnlyView := true;
+  FHexEditor.OnClick := @HexEditorClick;
+
+  MainPageControl.ActivePageIndex := 0;
+  DataPageControl.ActivePageIndex := 0;
+
   if ParamCount > 0 then
   begin
     ShellTreeView1.Path := ParamStr(1);
   end;
+end;
+
+procedure TMainForm.cbHexAddressModeChange(Sender: TObject);
+begin
+  FHexEditor.RulerNumberBase := IfThen(cbHexAddressMode.Checked, 16, 10);
+  FHexEditor.OffsetFormat := IfThen(cbHexAddressMode.Checked, '-!10:$|', '-!0A: |');
+end;
+
+procedure TMainForm.cbHexSingleBytesChange(Sender: TObject);
+begin
+  FHexEditor.BytesPerColumn := IfThen(cbHexSingleBytes.Checked, 1, 2);
+end;
+
+procedure TMainForm.HexEditorClick(Sender: TObject);
+begin
+  UpdateStatusbar;
 end;
 
 procedure TMainForm.LoadColorTable(AStream: TStream);
@@ -152,6 +218,7 @@ begin
     LoadFileHeader(stream);
     LoadInfoHeader(stream);
     LoadColorTable(stream);
+    LoadHex(stream);
     UpdateSummary;
   finally
     stream.Free;
@@ -245,6 +312,13 @@ begin
   end;
 end;
 
+procedure TMainForm.LoadHex(AStream: TStream);
+begin
+  AStream.Position := 0;
+  FHexEditor.LoadFromStream(AStream);
+  HexEditorClick(nil);
+end;
+
 procedure TMainForm.ShellListView1SelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
 begin
@@ -252,14 +326,27 @@ begin
     LoadFile(ShellListView1.GetPathFromItem(Item));
 end;
 
+procedure TMainForm.UpdateStatusbar;
+var
+  offs: Int64;
+begin
+  offs := FHexEditor.SelStart;
+  if offs > -1 then
+    Statusbar.Panels[PANEL_OFFSET].Text := Format('HexViewer offset: %d ($%x)', [offs, offs])
+  else
+    Statusbar.Panels[PANEL_OFFSET].Text := '';
+end;
 
 procedure TMainForm.UpdateSummary;
 begin
   SummaryValueList.RowCount := 1;
-  SummaryvalueList.InsertRow('Image width and height', Format('%d x %d', [FInfoHeader.Width, FInfoHeader.Height]), true);
-  SummaryValueList.InsertRow('Horizontal resolution', Format('%.0f ppi', [FInfoHeader.XPelsPerMeter * 0.0254]), true);
-  SummaryValueList.InsertRow('Vertical resolution', Format('%.0f ppi', [FInfoHeader.YPelsPerMeter * 0.0254]), true);
-  SummaryValueList.InsertRow('Bits per pixel', Format('%d', [FInfoHeader.BitCount]), true);
+  with FInfoHeader do
+  begin
+    SummaryValueList.InsertRow('Image width and height', Format('%d x %d', [Width, Height]), true);
+    SummaryValueList.InsertRow('Horizontal resolution', Format('%d px/m, %.0f ppi', [XPelsPerMeter, XPelsPerMeter * 0.0254]), true);
+    SummaryValueList.InsertRow('Vertical resolution', Format('%d px/m, %.0f ppi', [YPelsPerMeter, YPelsPerMeter * 0.0254]), true);
+    SummaryValueList.InsertRow('Bits per pixel', Format('%d', [BitCount]), true);
+  end;
   if FColorFormat <> '' then
     SummaryValueList.InsertRow('16 bit color mask', FColorFormat, true);
 end;

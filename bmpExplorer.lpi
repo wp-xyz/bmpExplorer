@@ -52,7 +52,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="source"/>
+      <OtherUnitFiles Value="source;source\third-party"/>
       <UnitOutputDirectory Value="ppu\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
