@@ -24,6 +24,7 @@ object MainForm: TMainForm
       Top = 1
       Width = 270
       Align = alTop
+      FileSortType = fstAlphabet
       TabOrder = 0
       Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
       ShellListView = ShellListView
