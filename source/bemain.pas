@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, StrUtils,
   LCLType, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls, ComCtrls,
   ShellCtrls, ValEdit,
-  bmpcomn, mpHexEditor;
+  bmpcomn, mpHexEditor, ImgList;
 
 type
 
@@ -18,6 +18,7 @@ type
     cbHexAddressMode: TCheckBox;
     cbHexSingleBytes: TCheckBox;
     ColorTableValueList: TValueListEditor;
+    ImageList: TImageList;
     Panel2: TPanel;
     StatusBar: TStatusBar;
     SummaryValueList: TValueListEditor;
@@ -27,8 +28,8 @@ type
     DataPageControl: TPageControl;
     Panel1: TPanel;
     ScrollBox1: TScrollBox;
-    ShellListView1: TShellListView;
-    ShellTreeView1: TShellTreeView;
+    ShellListView: TShellListView;
+    ShellTreeView: TShellTreeView;
     Splitter1: TSplitter;
     Splitter2: TSplitter;
     pgImage: TTabSheet;
@@ -42,8 +43,13 @@ type
     procedure cbHexAddressModeChange(Sender: TObject);
     procedure cbHexSingleBytesChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure ShellListView1SelectItem(Sender: TObject; Item: TListItem;
+    procedure ImageListGetWidthForPPI(Sender: TCustomImageList; AImageWidth,
+      APPI: Integer; var AResultWidth: Integer);
+    procedure ShellListViewFileAdded(Sender: TObject; Item: TListItem);
+    procedure ShellListViewSelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
+    procedure ShellTreeViewGetImageIndex(Sender: TObject; Node: TTreeNode);
+    procedure ShellTreeViewGetSelectedIndex(Sender: TObject; Node: TTreeNode);
   private
     FFileHeader: TBitmapFileHeader;
     FInfoHeader: TBitmapInfoHeader;
@@ -105,6 +111,15 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Caption := APP_TITLE;
 
+ {$IFNDEF MSWINDOWS}
+  ShellTreeView.Images := ImageList;
+  ShellTreeView.OnGetImageIndex := @ShellTreeViewGetImageIndex;
+  ShellTreeView.OnGetSelectedIndex := @ShellTreeViewGetSelectedIndex;
+
+  ShellListView.SmallImages := ImageList;
+  ShellListView.OnFileAdded := @ShellListViewFileAdded;
+ {$ENDIF}
+
   FHexEditor := TMPHExEditor.Create(self);
   FHexEditor.Parent := pgHex;
   FHexEditor.Align := alClient;
@@ -121,7 +136,7 @@ begin
 
   if ParamCount > 0 then
   begin
-    ShellTreeView1.Path := ParamStr(1);
+    ShellTreeView.Path := ParamStr(1);
   end;
 end;
 
@@ -139,6 +154,12 @@ end;
 procedure TMainForm.HexEditorClick(Sender: TObject);
 begin
   UpdateStatusbar;
+end;
+
+procedure TMainForm.ImageListGetWidthForPPI(Sender: TCustomImageList;
+  AImageWidth, APPI: Integer; var AResultWidth: Integer);
+begin
+  AResultWidth := AImageWidth * APPI div 96;
 end;
 
 procedure TMainForm.LoadColorTable(AStream: TStream);
@@ -319,11 +340,28 @@ begin
   HexEditorClick(nil);
 end;
 
-procedure TMainForm.ShellListView1SelectItem(Sender: TObject; Item: TListItem;
+procedure TMainForm.ShellListViewFileAdded(Sender: TObject; Item: TListItem);
+begin
+  Item.ImageIndex := 1;
+end;
+
+procedure TMainForm.ShellListViewSelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
 begin
   if Selected then
-    LoadFile(ShellListView1.GetPathFromItem(Item));
+    LoadFile(ShellListView.GetPathFromItem(Item));
+end;
+
+procedure TMainForm.ShellTreeViewGetImageIndex(Sender: TObject;
+  Node: TTreeNode);
+begin
+  Node.ImageIndex := 0;
+end;
+
+procedure TMainForm.ShellTreeViewGetSelectedIndex(Sender: TObject;
+  Node: TTreeNode);
+begin
+  Node.SelectedIndex := 0;
 end;
 
 procedure TMainForm.UpdateStatusbar;
