@@ -46,12 +46,12 @@ object MainForm: TMainForm
         end      
         item
           Alignment = taRightJustify
-          Caption = 'Größe'
+          Caption = 'Size'
           Width = 66
           ColumnID = cidSize
         end      
         item
-          Caption = 'Typ'
+          Caption = 'Type'
           Width = 66
           ColumnID = cidType
         end>
